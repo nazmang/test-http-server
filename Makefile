@@ -6,36 +6,38 @@ DOCKER_USERNAME = nazman
 IMAGE_TAG = latest
 REGISTRY_IMAGE = $(DOCKER_USERNAME)/$(IMAGE_NAME):$(IMAGE_TAG)
 
-# Default task
+# Declare certs as a PHONY target to always run
+.PHONY: certs help
+
+help: ## This help.
+	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+
+.DEFAULT_GOAL := help
+
 all: certs docker-build run
 
-# Step to create self-signed certificates
-certs:
+certs: ## Create self-signed certificates.
 	chmod +x certs/mkcert.sh
 	./certs/mkcert.sh
+	mv server.* ./certs/
 
-# Step to build the Docker image
-docker-build:
+docker-build: ## Build the Docker image.
 	docker build -t $(IMAGE_NAME) .
 
-# Step to tag the image for pushing to Docker Hub or other registry
-docker-tag:
+docker-tag: ## Tag the image for pushing to Docker Hub or other registry.
 	docker tag $(IMAGE_NAME) $(REGISTRY_IMAGE)
 
-# Step to push the image to the Docker registry
-docker-push: docker-tag
+docker-push: docker-tag ## Push the image to the Docker registry.
 	docker push $(REGISTRY_IMAGE)
 
-# Step to run the container
-run:
+run: ## Run the container.
 	docker run -d -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
 
-# Stop the container
-stop:
+stop: ## Stop the container.
 	docker stop $(CONTAINER_NAME) || true
 	docker rm $(CONTAINER_NAME) || true
 
-# Clean up certificates and Docker container/image
-clean: stop
+
+clean: stop ## Clean up certificates and Docker container/image.
 	rm -f certs/server.crt certs/server.key certs/server.csr
 	docker rmi $(IMAGE_NAME) || true
