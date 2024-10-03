@@ -18,7 +18,7 @@ RUN base64 /dev/urandom | head -c 35000000 > large_test_file.txt
 VOLUME ["/usr/src/app"]
 
 # Expose port 8400 for the HTTPS server
-EXPOSE 8400
+EXPOSE 80 8400
 
 # Run the custom HTTPS server script
 CMD ["python3", "https_server.py"]

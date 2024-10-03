@@ -1,7 +1,8 @@
 # Variables
 IMAGE_NAME = test-http-server
 CONTAINER_NAME = test_http_server
-PORT = 8400
+HTTP_PORT = 80
+HTTPS_PORT = 8400
 DOCKER_USERNAME = nazman
 IMAGE_TAG = latest
 REGISTRY_IMAGE = $(DOCKER_USERNAME)/$(IMAGE_NAME):$(IMAGE_TAG)
@@ -14,7 +15,7 @@ help: ## This help.
 
 .DEFAULT_GOAL := help
 
-all: certs docker-build run
+all: certs docker-build run ## Make everything and run the container.
 
 certs: ## Create self-signed certificates.
 	chmod +x certs/mkcert.sh
@@ -31,7 +32,7 @@ docker-push: docker-tag ## Push the image to the Docker registry.
 	docker push $(REGISTRY_IMAGE)
 
 run: ## Run the container.
-	docker run -d -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
+	docker run -d -p $(HTTP_PORT):$(HTTP_PORT) -p $(HTTPS_PORT):$(HTTPS_PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
 
 stop: ## Stop the container.
 	docker stop $(CONTAINER_NAME) || true
