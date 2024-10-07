@@ -86,10 +86,10 @@ The Docker container uses a volume at /usr/src/app. This volume ensures that the
 To mount a specific host directory as the volume, you can run:
 
 ```bash
-docker run -d -p 8400:8400 -v /path/to/host/directory:/usr/src/app --name test_https_server test-https-server
+docker run -d -p 8400:8400 -p 80:80 -v /path/to/host/directory:/usr/src/app/www --name test_https_server test-https-server
 ```
 
-This will mount the host directory /path/to/host/directory to /usr/src/app inside the container.
+This will mount the host directory /path/to/host/directory to /usr/src/app/www inside the container.
 
 ## Speed test
 
