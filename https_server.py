@@ -2,8 +2,11 @@ import http.server
 import ssl
 import threading
 
-# Define handler for HTTP and HTTPS
-Handler = http.server.SimpleHTTPRequestHandler
+# Define the directory you want to serve
+SERVE_DIRECTORY = './www'
+
+# Custom handler to serve from the specified directory
+Handler = lambda *args, **kwargs: http.server.SimpleHTTPRequestHandler(*args, directory=SERVE_DIRECTORY, **kwargs)
 
 # Function to run HTTPS server
 def run_https_server():
@@ -12,13 +15,13 @@ def run_https_server():
                                           certfile='/etc/ssl/certs/server.crt',
                                           keyfile='/etc/ssl/private/server.key',
                                           server_side=True)
-    print("HTTPS Server running on port 8400...")
+    print(f"HTTPS Server running on port 8400, serving files from {SERVE_DIRECTORY}...")
     https_server.serve_forever()
 
 # Function to run HTTP server
 def run_http_server():
     http_server = http.server.HTTPServer(('0.0.0.0', 80), Handler)
-    print("HTTP Server running on port 80...")
+    print(f"HTTP Server running on port 80, serving files from {SERVE_DIRECTORY}...")
     http_server.serve_forever()
 
 # Start both servers
